@@ -1,51 +1,535 @@
 <!DOCTYPE html>
-<html lang="en">
-
+<html lang="id">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
   <title>Dino AR Explorer</title>
 
-  <link rel="stylesheet" href="style.css">
-
   <script src="https://aframe.io/releases/1.4.0/aframe.min.js"></script>
-
   <script src="https://raw.githack.com/AR-js-org/AR.js/master/aframe/build/aframe-ar.js"></script>
-
   <script src="https://cdn.jsdelivr.net/npm/aframe-extras@6.1.1/dist/aframe-extras.min.js"></script>
-</head>
+  <link href="https://fonts.googleapis.com/css2?family=Exo+2:wght@600;800&family=Rajdhani:wght@400;500;600;700&display=swap" rel="stylesheet">
 
+  <style>
+    *, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
+
+    :root {
+      --green: #7dc242;
+      --green-bright: #9ddf5a;
+      --green-dark: #3a5c18;
+      --border: rgba(255,255,255,0.1);
+      --border-green: rgba(125,194,66,0.35);
+      --text: #e8e8e8;
+      --muted: #999;
+      --panel: rgba(8,8,8,0.82);
+    }
+
+    html, body {
+      width: 100%; height: 100%;
+      overflow: hidden;
+      background: #000;
+      font-family: 'Rajdhani', sans-serif;
+      color: var(--text);
+    }
+
+    /* ── AR SCENE fills full screen ── */
+    a-scene {
+      position: fixed !important;
+      top: 0; left: 0;
+      width: 100vw !important;
+      height: 100vh !important;
+      z-index: 0;
+    }
+
+    /* ── UI OVERLAY ── */
+    #ui {
+      position: fixed;
+      inset: 0;
+      z-index: 10;
+      pointer-events: none;
+    }
+    #ui > * { pointer-events: auto; }
+
+    /* ── TOP BAR ── */
+    #topbar {
+      position: absolute;
+      top: 16px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: var(--panel);
+      backdrop-filter: blur(14px);
+      border: 1px solid var(--border);
+      border-radius: 50px;
+      padding: 10px 22px;
+      font-size: 13px;
+      font-weight: 600;
+      letter-spacing: 0.4px;
+      color: var(--text);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      white-space: nowrap;
+    }
+    #topbar .dot-pulse {
+      width: 8px; height: 8px;
+      border-radius: 50%;
+      background: var(--green-bright);
+      animation: pulse 1.5s infinite;
+    }
+    @keyframes pulse {
+      0%,100% { opacity:1; transform:scale(1); }
+      50% { opacity:0.4; transform:scale(0.7); }
+    }
+
+    /* ── LOGO top-left ── */
+    #logo {
+      position: absolute;
+      top: 16px; left: 16px;
+      background: var(--panel);
+      backdrop-filter: blur(14px);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 10px 14px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    #logo .logo-icon {
+      width: 36px; height: 36px;
+      background: var(--green-dark);
+      border-radius: 8px;
+      border: 1px solid var(--border-green);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 20px;
+    }
+    #logo .logo-text { line-height:1; }
+    #logo .logo-main {
+      font-family: 'Exo 2', sans-serif;
+      font-size: 15px; font-weight: 800;
+      color: var(--green-bright);
+      letter-spacing: 1px;
+      display: block;
+    }
+    #logo .logo-sub {
+      font-size: 10px; font-weight: 600;
+      color: var(--muted); letter-spacing: 2px;
+      text-transform: uppercase;
+    }
+
+    /* ── RIGHT CONTROLS ── */
+    #right-controls {
+      position: absolute;
+      right: 14px;
+      top: 50%;
+      transform: translateY(-50%);
+      display: flex; flex-direction: column; gap: 8px;
+    }
+    .ctrl-btn {
+      width: 50px; height: 50px;
+      background: var(--panel);
+      backdrop-filter: blur(14px);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      display: flex; flex-direction: column;
+      align-items: center; justify-content: center;
+      gap: 2px; cursor: pointer;
+      transition: border-color 0.2s, background 0.2s;
+    }
+    .ctrl-btn:hover { border-color: var(--border-green); background: rgba(58,92,24,0.6); }
+    .ctrl-btn .ci { font-size: 18px; line-height: 1; }
+    .ctrl-btn .cl { font-size: 9px; font-weight: 700; letter-spacing: 1px; color: var(--muted); }
+
+    /* ── BOTTOM PANEL ── */
+    #bottom-panel {
+      position: absolute;
+      bottom: 0; left: 0; right: 0;
+      background: rgba(6,6,6,0.92);
+      backdrop-filter: blur(20px);
+      border-top: 1px solid var(--border);
+      padding: 14px 16px 16px;
+    }
+
+    /* Dino selector tabs */
+    #dino-tabs {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 12px;
+      overflow-x: auto;
+      scrollbar-width: none;
+    }
+    #dino-tabs::-webkit-scrollbar { display:none; }
+
+    .dino-tab {
+      flex-shrink: 0;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 14px;
+      border-radius: 50px;
+      border: 1px solid var(--border);
+      background: rgba(255,255,255,0.04);
+      cursor: pointer;
+      font-size: 13px;
+      font-weight: 600;
+      letter-spacing: 0.5px;
+      color: var(--muted);
+      transition: all 0.2s;
+      white-space: nowrap;
+    }
+    .dino-tab:hover { border-color: var(--border-green); color: var(--text); }
+    .dino-tab.active {
+      background: var(--green-dark);
+      border-color: var(--border-green);
+      color: var(--green-bright);
+    }
+    .dino-tab .tab-emoji { font-size: 16px; }
+
+    /* Info card */
+    #dino-info {
+      display: flex;
+      gap: 14px;
+      align-items: flex-start;
+    }
+
+    #dino-avatar {
+      width: 72px; height: 72px;
+      min-width: 72px;
+      background: linear-gradient(135deg, #1a2a0a, #0c160a);
+      border-radius: 14px;
+      border: 1px solid var(--border-green);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 44px;
+    }
+
+    #dino-detail { flex: 1; min-width: 0; }
+
+    #dino-header {
+      display: flex; align-items: center;
+      gap: 10px; margin-bottom: 4px;
+      flex-wrap: wrap;
+    }
+    #dino-name {
+      font-family: 'Exo 2', sans-serif;
+      font-size: 16px; font-weight: 800;
+      color: var(--green-bright);
+      letter-spacing: 1px;
+      text-transform: uppercase;
+    }
+    #dino-badge {
+      padding: 2px 10px;
+      border-radius: 20px;
+      font-size: 11px; font-weight: 700;
+    }
+    .badge-predator { background:rgba(200,60,60,0.2); color:#e07878; border:1px solid rgba(200,60,60,0.3); }
+    .badge-herbivora { background:rgba(60,180,60,0.2); color:#70e070; border:1px solid rgba(60,180,60,0.3); }
+    .badge-omnivora  { background:rgba(200,140,40,0.2); color:#e0b060; border:1px solid rgba(200,140,40,0.3); }
+
+    #dino-desc {
+      font-size: 12px;
+      color: var(--muted);
+      line-height: 1.5;
+      margin-bottom: 8px;
+    }
+
+    #dino-stats {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 4px 14px;
+    }
+    .stat-item {
+      font-size: 12px;
+      color: var(--muted);
+      display: flex;
+      gap: 4px;
+      align-items: center;
+    }
+    .stat-item strong { color: var(--text); font-weight: 600; }
+
+    /* active model label */
+    #active-label {
+      position: absolute;
+      top: 16px; right: 16px;
+      background: var(--panel);
+      backdrop-filter: blur(14px);
+      border: 1px solid var(--border-green);
+      border-radius: 50px;
+      padding: 8px 16px;
+      font-size: 12px; font-weight: 700;
+      color: var(--green-bright);
+      letter-spacing: 0.5px;
+      display: flex; align-items: center; gap: 7px;
+    }
+
+    /* transition animation */
+    #dino-info { transition: opacity 0.25s; }
+    #dino-info.fade { opacity: 0; }
+  </style>
+</head>
 <body>
 
-  <!-- UI -->
-  <div class="overlay">
+<!-- ═══════════════════════════════════════════
+     AR SCENE — full screen, camera visible
+═══════════════════════════════════════════ -->
+<a-scene
+  embedded
+  vr-mode-ui="enabled: false"
+  renderer="logarithmicDepthBuffer: true; antialias: true;"
+  arjs="sourceType: webcam; trackingMethod: best; debugUIEnabled: false;">
 
-    <h1>Dino AR Explorer</h1>
+  <a-assets>
+    <!-- Models loaded from your /models/ folder -->
+  </a-assets>
 
-    <p>Scan marker untuk melihat dinosaurus.</p>
+  <a-marker preset="hiro" id="hiro-marker">
+    <!-- Active dino entity — model swapped by JS -->
+    <a-entity
+      id="dino-entity"
+      animation-mixer
+      scale="0.4 0.4 0.4"
+      position="0 0 0"
+      rotation="0 0 0">
+    </a-entity>
+  </a-marker>
 
-    <button>Start AR</button>
+  <a-entity camera></a-entity>
 
+</a-scene>
+
+
+<!-- ═══════════════════════════════════════════
+     UI OVERLAY
+═══════════════════════════════════════════ -->
+<div id="ui">
+
+  <!-- Logo -->
+  <div id="logo">
+    <div class="logo-icon">🦕</div>
+    <div class="logo-text">
+      <span class="logo-main">DINO AR</span>
+      <span class="logo-sub">Explorer</span>
+    </div>
   </div>
 
-  <!-- AR -->
-  <a-scene embedded arjs>
+  <!-- Top bar -->
+  <div id="topbar">
+    <div class="dot-pulse"></div>
+    Arahkan kamera ke marker Hiro
+  </div>
 
-    <a-marker preset="hiro">
+  <!-- Active dino label top-right -->
+  <div id="active-label">
+    <span>🦖</span>
+    <span id="active-name">T-Rex</span>
+  </div>
 
-      <a-entity
-        gltf-model="models/pterodactyl.glb"
-        animation-mixer
-        scale="0.5 0.5 0.5"
-        position="0 0 0">
-      </a-entity>
+  <!-- Right controls -->
+  <div id="right-controls">
+    <div class="ctrl-btn" title="Flip Camera" onclick="flipCamera()">
+      <span class="ci">🔄</span>
+      <span class="cl">FLIP</span>
+    </div>
+    <div class="ctrl-btn" title="Fullscreen" onclick="toggleFullscreen()">
+      <span class="ci">⛶</span>
+      <span class="cl">FULL</span>
+    </div>
+  </div>
 
-    </a-marker>
+  <!-- Bottom Panel -->
+  <div id="bottom-panel">
 
-    <a-entity camera></a-entity>
+    <!-- Dino selector tabs -->
+    <div id="dino-tabs">
+      <div class="dino-tab active" data-dino="trex" onclick="selectDino('trex', this)">
+        <span class="tab-emoji">🦖</span> T-Rex
+      </div>
+      <div class="dino-tab" data-dino="stego" onclick="selectDino('stego', this)">
+        <span class="tab-emoji">🦕</span> Stegosaurus
+      </div>
+      <div class="dino-tab" data-dino="ptero" onclick="selectDino('ptero', this)">
+        <span class="tab-emoji">🦅</span> Pterodactyl
+      </div>
+      <div class="dino-tab" data-dino="ankylo" onclick="selectDino('ankylo', this)">
+        <span class="tab-emoji">🐉</span> Ankylosaurus
+      </div>
+      <div class="dino-tab" data-dino="velo" onclick="selectDino('velo', this)">
+        <span class="tab-emoji">🦎</span> Velociraptor
+      </div>
+    </div>
 
-  </a-scene>
+    <!-- Dino Info Card -->
+    <div id="dino-info">
+      <div id="dino-avatar">🦖</div>
+      <div id="dino-detail">
+        <div id="dino-header">
+          <div id="dino-name">Tyrannosaurus Rex</div>
+          <span id="dino-badge" class="badge-predator">Predator</span>
+        </div>
+        <p id="dino-desc">Raja predator dengan gigi tajam dan kekuatan gigitan yang paling kuat di zamannya.</p>
+        <div id="dino-stats">
+          <div class="stat-item">🦴 <strong>Periode:</strong>&nbsp;Kapur Akhir</div>
+          <div class="stat-item">📏 <strong>Panjang:</strong>&nbsp;12–13 m</div>
+          <div class="stat-item">⚖️ <strong>Berat:</strong>&nbsp;6–9 ton</div>
+          <div class="stat-item">🍖 <strong>Makanan:</strong>&nbsp;Daging</div>
+          <div class="stat-item">🌍 <strong>Wilayah:</strong>&nbsp;Amerika Utara</div>
+          <div class="stat-item">⚡ <strong>Kecepatan:</strong>&nbsp;~20 km/h</div>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- /bottom-panel -->
+
+</div><!-- /ui -->
+
+
+<script>
+  /* ═══════════════════════════════════════
+     DINO DATA
+  ═══════════════════════════════════════ */
+  const DINOS = {
+    trex: {
+      name: 'Tyrannosaurus Rex',
+      emoji: '🦖',
+      badge: 'Predator',
+      badgeClass: 'badge-predator',
+      desc: 'Raja predator dengan gigi tajam dan kekuatan gigitan yang paling kuat di zamannya.',
+      model: 'models/tyronnosaurus.glb',
+      scale: '0.4 0.4 0.4',
+      stats: { 'Periode':'Kapur Akhir','Panjang':'12–13 m','Berat':'6–9 ton','Makanan':'Daging','Wilayah':'Amerika Utara','Kecepatan':'~20 km/h' },
+      statIcons: { 'Periode':'🦴','Panjang':'📏','Berat':'⚖️','Makanan':'🍖','Wilayah':'🌍','Kecepatan':'⚡' }
+    },
+    stego: {
+      name: 'Stegosaurus',
+      emoji: '🦕',
+      badge: 'Herbivora',
+      badgeClass: 'badge-herbivora',
+      desc: 'Dinosaurus herbivora dengan lempeng besar di punggung sebagai pengatur suhu tubuh.',
+      model: 'models/stegosaurus.glb',
+      scale: '0.35 0.35 0.35',
+      stats: { 'Periode':'Jura Akhir','Panjang':'7–9 m','Berat':'2–4 ton','Makanan':'Tumbuhan','Wilayah':'Amerika & Eropa','Kecepatan':'~7 km/h' },
+      statIcons: { 'Periode':'🦴','Panjang':'📏','Berat':'⚖️','Makanan':'🌿','Wilayah':'🌍','Kecepatan':'⚡' }
+    },
+    ptero: {
+      name: 'Pterodactyl',
+      emoji: '🦅',
+      badge: 'Predator',
+      badgeClass: 'badge-predator',
+      desc: 'Reptil terbang raksasa dengan sayap hingga 9 meter, menguasai langit era Jurassic.',
+      model: 'models/pterodactyl.glb',
+      scale: '0.3 0.3 0.3',
+      stats: { 'Periode':'Jura Akhir','Rentang Sayap':'5–9 m','Berat':'20–250 kg','Makanan':'Ikan & Daging','Wilayah':'Seluruh Dunia','Kecepatan':'~120 km/h' },
+      statIcons: { 'Periode':'🦴','Rentang Sayap':'📐','Berat':'⚖️','Makanan':'🐟','Wilayah':'🌍','Kecepatan':'⚡' }
+    },
+    ankylo: {
+      name: 'Triceratops',
+      emoji: '🐉',
+      badge: 'Herbivora',
+      badgeClass: 'badge-herbivora',
+      desc: 'Tank hidup era dinosaurus — seluruh tubuhnya dilapisi baju besi tulang dan berekor gada berat.',
+      model: 'models/triceratops.glb',
+      scale: '0.38 0.38 0.38',
+      stats: { 'Periode':'Kapur Akhir','Panjang':'6–8 m','Berat':'4–8 ton','Makanan':'Tumbuhan','Wilayah':'Amerika Utara','Pertahanan':'Armor + Gada' },
+      statIcons: { 'Periode':'🦴','Panjang':'📏','Berat':'⚖️','Makanan':'🌿','Wilayah':'🌍','Pertahanan':'🛡️' }
+    },
+    velo: {
+      name: 'Velociraptor',
+      emoji: '🦎',
+      badge: 'Predator',
+      badgeClass: 'badge-predator',
+      desc: 'Predator kecil namun cerdas dan lincah, berburu berkelompok dengan cakar tajam melengkung.',
+      model: 'models/velociraptor.glb',
+      scale: '0.3 0.3 0.3',
+      stats: { 'Periode':'Kapur Akhir','Panjang':'1.8–2 m','Berat':'15–30 kg','Makanan':'Daging','Wilayah':'Asia','Kecepatan':'~64 km/h' },
+      statIcons: { 'Periode':'🦴','Panjang':'📏','Berat':'⚖️','Makanan':'🍖','Wilayah':'🌍','Kecepatan':'⚡' }
+    }
+  };
+
+  let currentDino = 'trex';
+  const dinoEntity = document.getElementById('dino-entity');
+  const infoEl = document.getElementById('dino-info');
+
+  /* Initial model */
+  dinoEntity.setAttribute('gltf-model', DINOS[currentDino].model);
+  dinoEntity.setAttribute('scale', DINOS[currentDino].scale);
+
+  function selectDino(key, tabEl) {
+    if (key === currentDino) return;
+    currentDino = key;
+    const d = DINOS[key];
+
+    /* Update tabs */
+    document.querySelectorAll('.dino-tab').forEach(t => t.classList.remove('active'));
+    tabEl.classList.add('active');
+
+    /* Fade info */
+    infoEl.classList.add('fade');
+    setTimeout(() => {
+      /* Update AR model */
+      dinoEntity.removeAttribute('gltf-model');
+      dinoEntity.setAttribute('gltf-model', d.model);
+      dinoEntity.setAttribute('scale', d.scale);
+
+      /* Update active label */
+      document.getElementById('active-name').textContent = d.name.split(' ')[0];
+      document.querySelector('#active-label span:first-child').textContent = d.emoji;
+
+      /* Update info card */
+      document.getElementById('dino-avatar').textContent = d.emoji;
+      document.getElementById('dino-name').textContent = d.name;
+      const badge = document.getElementById('dino-badge');
+      badge.textContent = d.badge;
+      badge.className = d.badgeClass;
+      document.getElementById('dino-desc').textContent = d.desc;
+
+      const statsEl = document.getElementById('dino-stats');
+      statsEl.innerHTML = Object.entries(d.stats).map(([k, v]) =>
+        `<div class="stat-item">${d.statIcons[k]} <strong>${k}:</strong>&nbsp;${v}</div>`
+      ).join('');
+
+      infoEl.classList.remove('fade');
+    }, 220);
+  }
+
+  /* ═══════════════════════════════════════
+     CAMERA FLIP
+  ═══════════════════════════════════════ */
+  let facingMode = 'environment';
+  function flipCamera() {
+    facingMode = facingMode === 'environment' ? 'user' : 'environment';
+    const scene = document.querySelector('a-scene');
+    const arSystem = scene.systems['arjs'];
+    if (arSystem && arSystem.arController) {
+      try {
+        arSystem.arController.stopVideo();
+        scene.setAttribute('arjs', `sourceType: webcam; facingMode: ${facingMode}; trackingMethod: best; debugUIEnabled: false;`);
+      } catch(e) {
+        console.warn('Flip camera:', e);
+      }
+    }
+  }
+
+  /* ═══════════════════════════════════════
+     FULLSCREEN
+  ═══════════════════════════════════════ */
+  function toggleFullscreen() {
+    if (!document.fullscreenElement) {
+      document.documentElement.requestFullscreen && document.documentElement.requestFullscreen();
+    } else {
+      document.exitFullscreen && document.exitFullscreen();
+    }
+  }
+
+  /* ═══════════════════════════════════════
+     MARKER FOUND / LOST FEEDBACK
+  ═══════════════════════════════════════ */
+  document.querySelector('#hiro-marker').addEventListener('markerFound', () => {
+    document.getElementById('topbar').innerHTML =
+      '<div class="dot-pulse" style="background:#9ddf5a"></div> Dinosaurus terdeteksi!';
+  });
+  document.querySelector('#hiro-marker').addEventListener('markerLost', () => {
+    document.getElementById('topbar').innerHTML =
+      '<div class="dot-pulse"></div> Arahkan kamera ke marker Hiro';
+  });
+</script>
 
 </body>
 </html>
