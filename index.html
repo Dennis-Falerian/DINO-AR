@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <title>Dino AR Explorer</title>
+
+  <link rel="stylesheet" href="style.css">
+
+  <script src="https://aframe.io/releases/1.4.0/aframe.min.js"></script>
+
+  <script src="https://raw.githack.com/AR-js-org/AR.js/master/aframe/build/aframe-ar.js"></script>
+
+  <script src="https://cdn.jsdelivr.net/npm/aframe-extras@6.1.1/dist/aframe-extras.min.js"></script>
+</head>
+
+<body>
+
+  <!-- UI -->
+  <div class="overlay">
+
+    <h1>Dino AR Explorer</h1>
+
+    <p>Scan marker untuk melihat dinosaurus.</p>
+
+    <button>Start AR</button>
+
+  </div>
+
+  <!-- AR -->
+  <a-scene embedded arjs>
+
+    <a-marker preset="hiro">
+
+      <a-entity
+        gltf-model="models/pterodactyl.glb"
+        animation-mixer
+        scale="0.5 0.5 0.5"
+        position="0 0 0">
+      </a-entity>
+
+    </a-marker>
+
+    <a-entity camera></a-entity>
+
+  </a-scene>
+
+</body>
+</html>
