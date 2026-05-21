@@ -20,7 +20,7 @@
       --border: rgba(255,255,255,0.1);
       --border-green: rgba(125,194,66,0.35);
       --text: #e8e8e8;
-      --muted: #999;
+      --muted: #aaa;
       --panel: rgba(8,8,8,0.82);
     }
 
@@ -32,7 +32,6 @@
       color: var(--text);
     }
 
-    /* ── AR SCENE fills full screen ── */
     a-scene {
       position: fixed !important;
       top: 0; left: 0;
@@ -40,39 +39,34 @@
       height: 100vh !important;
       z-index: 0;
     }
-
-    /* ── UI OVERLAY ── */
-    #ui {
-      position: fixed;
-      inset: 0;
-      z-index: 10;
-      pointer-events: none;
+    a-scene canvas, .arjs-loader {
+      display: block;
+      width: 100% !important;
+      height: 100% !important;
     }
+
+    /* UI OVERLAY */
+    #ui { position: fixed; inset: 0; z-index: 10; pointer-events: none; }
     #ui > * { pointer-events: auto; }
 
-    /* ── TOP BAR ── */
+    /* TOP BAR */
     #topbar {
       position: absolute;
-      top: 16px;
-      left: 50%;
+      top: 16px; left: 50%;
       transform: translateX(-50%);
       background: var(--panel);
       backdrop-filter: blur(14px);
       border: 1px solid var(--border);
       border-radius: 50px;
       padding: 10px 22px;
-      font-size: 13px;
-      font-weight: 600;
-      letter-spacing: 0.4px;
+      font-size: 13px; font-weight: 600; letter-spacing: 0.4px;
       color: var(--text);
-      display: flex;
-      align-items: center;
-      gap: 8px;
+      display: flex; align-items: center; gap: 8px;
       white-space: nowrap;
+      z-index: 11;
     }
     #topbar .dot-pulse {
-      width: 8px; height: 8px;
-      border-radius: 50%;
+      width: 8px; height: 8px; border-radius: 50%;
       background: var(--green-bright);
       animation: pulse 1.5s infinite;
     }
@@ -81,227 +75,289 @@
       50% { opacity:0.4; transform:scale(0.7); }
     }
 
-    /* ── LOGO top-left ── */
+    /* LOGO */
     #logo {
-      position: absolute;
-      top: 16px; left: 16px;
-      background: var(--panel);
-      backdrop-filter: blur(14px);
-      border: 1px solid var(--border);
-      border-radius: 14px;
-      padding: 10px 14px;
-      display: flex;
-      align-items: center;
-      gap: 10px;
+      position: absolute; top: 16px; left: 16px;
+      background: var(--panel); backdrop-filter: blur(14px);
+      border: 1px solid var(--border); border-radius: 14px;
+      padding: 10px 14px; display: flex; align-items: center; gap: 10px;
     }
     #logo .logo-icon {
-      width: 36px; height: 36px;
-      background: var(--green-dark);
-      border-radius: 8px;
-      border: 1px solid var(--border-green);
-      display: flex; align-items: center; justify-content: center;
-      font-size: 20px;
+      width: 36px; height: 36px; background: var(--green-dark);
+      border-radius: 8px; border: 1px solid var(--border-green);
+      display: flex; align-items: center; justify-content: center; font-size: 20px;
     }
-    #logo .logo-text { line-height:1; }
+    #logo .logo-text { line-height: 1; }
     #logo .logo-main {
-      font-family: 'Exo 2', sans-serif;
-      font-size: 15px; font-weight: 800;
-      color: var(--green-bright);
-      letter-spacing: 1px;
-      display: block;
+      font-family: 'Exo 2', sans-serif; font-size: 15px; font-weight: 800;
+      color: var(--green-bright); letter-spacing: 1px; display: block;
     }
     #logo .logo-sub {
-      font-size: 10px; font-weight: 600;
-      color: var(--muted); letter-spacing: 2px;
-      text-transform: uppercase;
+      font-size: 10px; font-weight: 600; color: var(--muted);
+      letter-spacing: 2px; text-transform: uppercase;
     }
 
-    /* ── RIGHT CONTROLS ── */
+    /* ACTIVE LABEL */
+    #active-label {
+      position: absolute; top: 16px; right: 16px;
+      background: var(--panel); backdrop-filter: blur(14px);
+      border: 1px solid var(--border-green); border-radius: 50px;
+      padding: 8px 16px; font-size: 12px; font-weight: 700;
+      color: var(--green-bright); letter-spacing: 0.5px;
+      display: flex; align-items: center; gap: 7px;
+    }
+
+    /* RIGHT CONTROLS */
     #right-controls {
-      position: absolute;
-      right: 14px;
-      top: 50%;
+      position: absolute; right: 14px; top: 50%;
       transform: translateY(-50%);
       display: flex; flex-direction: column; gap: 8px;
     }
     .ctrl-btn {
       width: 50px; height: 50px;
-      background: var(--panel);
-      backdrop-filter: blur(14px);
-      border: 1px solid var(--border);
-      border-radius: 12px;
+      background: var(--panel); backdrop-filter: blur(14px);
+      border: 1px solid var(--border); border-radius: 12px;
       display: flex; flex-direction: column;
       align-items: center; justify-content: center;
       gap: 2px; cursor: pointer;
       transition: border-color 0.2s, background 0.2s;
     }
     .ctrl-btn:hover { border-color: var(--border-green); background: rgba(58,92,24,0.6); }
+    .ctrl-btn.active-sound { border-color: var(--border-green); background: rgba(58,92,24,0.5); }
     .ctrl-btn .ci { font-size: 18px; line-height: 1; }
     .ctrl-btn .cl { font-size: 9px; font-weight: 700; letter-spacing: 1px; color: var(--muted); }
 
-    /* ── BOTTOM PANEL ── */
+    /* BOTTOM SHEET — draggable */
     #bottom-panel {
-      position: absolute;
-      bottom: 0; left: 0; right: 0;
-      background: rgba(6,6,6,0.92);
-      backdrop-filter: blur(20px);
+      position: fixed; bottom: 0; left: 0; right: 0;
+      background: rgba(6,6,6,0.97); backdrop-filter: blur(20px);
       border-top: 1px solid var(--border);
-      padding: 14px 16px 16px;
+      border-radius: 20px 20px 0 0;
+      height: 80vh;
+      transform: translateY(calc(80vh - 160px));
+      transition: transform 0.35s cubic-bezier(0.32, 0.72, 0, 1);
+      overflow: hidden;
+      z-index: 10;
+      touch-action: none;
+    }
+    #bottom-panel.expanded { transform: translateY(0); }
+    #bottom-panel.collapsed { transform: translateY(calc(80vh - 50px)); }
+
+    #sheet-handle {
+      width: 100%; padding: 10px 0 4px;
+      display: flex; justify-content: center; align-items: center;
+      cursor: grab; flex-shrink: 0;
+      touch-action: none;
+    }
+    #sheet-handle:active { cursor: grabbing; }
+    #sheet-handle-bar {
+      width: 40px; height: 4px;
+      background: rgba(255,255,255,0.25);
+      border-radius: 4px;
     }
 
-    /* Dino selector tabs */
+    #sheet-scroll {
+      height: calc(80vh - 30px);
+      overflow-y: auto;
+      overflow-x: hidden;
+      scrollbar-width: thin;
+      scrollbar-color: var(--green-dark) transparent;
+      padding: 0 16px 32px;
+    }
+    #sheet-scroll::-webkit-scrollbar { width: 3px; }
+    #sheet-scroll::-webkit-scrollbar-thumb { background: var(--green-dark); border-radius: 4px; }
+
+    /* Tabs */
     #dino-tabs {
-      display: flex;
-      gap: 8px;
-      margin-bottom: 12px;
-      overflow-x: auto;
-      scrollbar-width: none;
+      display: flex; gap: 8px; margin-bottom: 14px;
+      overflow-x: auto; scrollbar-width: none;
+      position: sticky; top: 0;
+      background: rgba(6,6,6,0.98);
+      padding: 6px 0 8px; z-index: 2;
     }
-    #dino-tabs::-webkit-scrollbar { display:none; }
-
+    #dino-tabs::-webkit-scrollbar { display: none; }
     .dino-tab {
-      flex-shrink: 0;
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      padding: 8px 14px;
-      border-radius: 50px;
-      border: 1px solid var(--border);
-      background: rgba(255,255,255,0.04);
-      cursor: pointer;
-      font-size: 13px;
-      font-weight: 600;
-      letter-spacing: 0.5px;
-      color: var(--muted);
-      transition: all 0.2s;
-      white-space: nowrap;
+      flex-shrink: 0; display: flex; align-items: center; gap: 8px;
+      padding: 8px 14px; border-radius: 50px;
+      border: 1px solid var(--border); background: rgba(255,255,255,0.04);
+      cursor: pointer; font-size: 13px; font-weight: 600;
+      letter-spacing: 0.5px; color: var(--muted);
+      transition: all 0.2s; white-space: nowrap;
     }
     .dino-tab:hover { border-color: var(--border-green); color: var(--text); }
-    .dino-tab.active {
-      background: var(--green-dark);
-      border-color: var(--border-green);
-      color: var(--green-bright);
-    }
+    .dino-tab.active { background: var(--green-dark); border-color: var(--border-green); color: var(--green-bright); }
     .dino-tab .tab-emoji { font-size: 16px; }
 
-    /* Info card */
-    #dino-info {
-      display: flex;
-      gap: 14px;
-      align-items: flex-start;
-    }
+    #dino-info { transition: opacity 0.25s; }
+    #dino-info.fade { opacity: 0; }
 
+    .info-top {
+      display: flex; gap: 14px; align-items: flex-start; margin-bottom: 12px;
+    }
     #dino-avatar {
-      width: 72px; height: 72px;
-      min-width: 72px;
+      width: 72px; height: 72px; min-width: 72px;
       background: linear-gradient(135deg, #1a2a0a, #0c160a);
-      border-radius: 14px;
-      border: 1px solid var(--border-green);
-      display: flex; align-items: center; justify-content: center;
-      font-size: 44px;
+      border-radius: 14px; border: 1px solid var(--border-green);
+      display: flex; align-items: center; justify-content: center; font-size: 44px;
     }
-
     #dino-detail { flex: 1; min-width: 0; }
-
     #dino-header {
-      display: flex; align-items: center;
-      gap: 10px; margin-bottom: 4px;
-      flex-wrap: wrap;
+      display: flex; align-items: center; gap: 10px;
+      margin-bottom: 6px; flex-wrap: wrap;
     }
     #dino-name {
-      font-family: 'Exo 2', sans-serif;
-      font-size: 16px; font-weight: 800;
-      color: var(--green-bright);
-      letter-spacing: 1px;
-      text-transform: uppercase;
+      font-family: 'Exo 2', sans-serif; font-size: 16px; font-weight: 800;
+      color: var(--green-bright); letter-spacing: 1px; text-transform: uppercase;
     }
-    #dino-badge {
-      padding: 2px 10px;
-      border-radius: 20px;
-      font-size: 11px; font-weight: 700;
-    }
+    #dino-badge { padding: 2px 10px; border-radius: 20px; font-size: 11px; font-weight: 700; }
     .badge-predator { background:rgba(200,60,60,0.2); color:#e07878; border:1px solid rgba(200,60,60,0.3); }
     .badge-herbivora { background:rgba(60,180,60,0.2); color:#70e070; border:1px solid rgba(60,180,60,0.3); }
     .badge-omnivora  { background:rgba(200,140,40,0.2); color:#e0b060; border:1px solid rgba(200,140,40,0.3); }
 
     #dino-desc {
-      font-size: 12px;
-      color: var(--muted);
-      line-height: 1.5;
-      margin-bottom: 8px;
+      font-size: 12.5px; color: var(--muted); line-height: 1.55; margin-bottom: 10px;
     }
 
     #dino-stats {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 4px 14px;
+      display: grid; grid-template-columns: 1fr 1fr; gap: 5px 14px;
     }
-    .stat-item {
-      font-size: 12px;
-      color: var(--muted);
-      display: flex;
-      gap: 4px;
-      align-items: center;
-    }
-    .stat-item strong { color: var(--text); font-weight: 600; }
+    .stat-item { font-size: 12px; color: var(--muted); display: flex; gap: 4px; align-items: flex-start; }
+    .stat-item strong { color: var(--text); font-weight: 600; white-space: nowrap; }
 
-    /* active model label */
-    #active-label {
-      position: absolute;
-      top: 16px; right: 16px;
-      background: var(--panel);
-      backdrop-filter: blur(14px);
-      border: 1px solid var(--border-green);
-      border-radius: 50px;
-      padding: 8px 16px;
-      font-size: 12px; font-weight: 700;
-      color: var(--green-bright);
-      letter-spacing: 0.5px;
-      display: flex; align-items: center; gap: 7px;
+    .info-section {
+      border-top: 1px solid var(--border);
+      padding-top: 13px; margin-top: 14px;
+    }
+    .info-section-title {
+      font-family: 'Exo 2', sans-serif; font-size: 11px; font-weight: 800;
+      color: var(--green-bright); letter-spacing: 2px; text-transform: uppercase;
+      margin-bottom: 9px; display: flex; align-items: center; gap: 6px;
+    }
+    .info-section-title::after {
+      content: ''; flex: 1; height: 1px;
+      background: linear-gradient(to right, var(--border-green), transparent);
     }
 
-    /* transition animation */
-    #dino-info { transition: opacity 0.25s; }
-    #dino-info.fade { opacity: 0; }
+    #dino-desc-full {
+      font-size: 12.5px; color: var(--muted); line-height: 1.7;
+    }
+
+    #dino-facts { display: flex; flex-direction: column; gap: 7px; }
+    .fact-item {
+      display: flex; gap: 9px; align-items: flex-start;
+      background: rgba(255,255,255,0.03);
+      border: 1px solid var(--border);
+      border-radius: 10px; padding: 8px 10px;
+    }
+    .fact-icon { font-size: 16px; flex-shrink: 0; margin-top: 1px; }
+    .fact-text { font-size: 12px; color: var(--muted); line-height: 1.55; }
+    .fact-text strong { color: var(--text); font-weight: 600; }
+
+    #dino-timeline {
+      display: flex; align-items: center;
+      background: rgba(255,255,255,0.03);
+      border: 1px solid var(--border); border-radius: 10px;
+      overflow: hidden;
+    }
+    .tl-item {
+      flex: 1; padding: 8px 6px; text-align: center;
+      font-size: 10px; color: var(--muted); line-height: 1.4;
+      border-right: 1px solid var(--border);
+    }
+    .tl-item:last-child { border-right: none; }
+    .tl-item.tl-active { background: rgba(58,92,24,0.5); color: var(--green-bright); }
+    .tl-item .tl-era { font-weight: 800; font-size: 11px; display: block; }
+    .tl-item .tl-mya { font-size: 9px; color: var(--muted); }
+
+    #err-toast {
+      position: fixed; bottom: 200px; left: 50%; transform: translateX(-50%);
+      background: rgba(180,40,40,0.9); border: 1px solid rgba(255,80,80,0.4);
+      border-radius: 10px; padding: 8px 18px;
+      font-size: 12px; font-weight: 600; color: #fff;
+      z-index: 20; display: none; max-width: 85vw; text-align: center;
+    }
   </style>
+
+  <script>
+    /*
+      fix-material — hanya reset roughness & metalness
+      agar model tidak over-reflektif / terlalu metalik.
+      Warna asli (dari tekstur GLB) TIDAK disentuh sama sekali.
+      Emissive juga TIDAK diubah supaya warna tekstur asli tampil.
+    */
+    AFRAME.registerComponent('fix-material', {
+      schema: {
+        roughness: { type: 'number', default: 0.85 },
+        metalness: { type: 'number', default: 0.0  }
+      },
+      init: function () {
+        const self = this;
+        this.el.addEventListener('model-loaded', function () {
+          const mesh = self.el.getObject3D('mesh');
+          if (!mesh) return;
+          mesh.traverse(function (node) {
+            if (node.isMesh && node.material) {
+              const mats = Array.isArray(node.material) ? node.material : [node.material];
+              mats.forEach(function (mat) {
+                mat.roughness = self.data.roughness;
+                mat.metalness = self.data.metalness;
+                mat.needsUpdate = true;
+              });
+            }
+          });
+        });
+      }
+    });
+  </script>
 </head>
 <body>
 
-<!-- ═══════════════════════════════════════════
-     AR SCENE — full screen, camera visible
-═══════════════════════════════════════════ -->
+<!-- ═══════════════════════ AR SCENE ═══════════════════════ -->
 <a-scene
   embedded
   vr-mode-ui="enabled: false"
-  renderer="logarithmicDepthBuffer: true; antialias: true;"
-  arjs="sourceType: webcam; trackingMethod: best; debugUIEnabled: false;">
+  renderer="logarithmicDepthBuffer: true; antialias: true; colorManagement: true; exposure: 0.6;"
+  arjs="sourceType: webcam; trackingMethod: best; debugUIEnabled: false; sourceWidth: 1280; sourceHeight: 720; displayWidth: 1280; displayHeight: 720;">
 
-  <a-assets>
-    <!-- Models loaded from your /models/ folder -->
+  <a-assets timeout="30000">
+    <a-asset-item id="model-trex"   src="models/animated_rexy.glb"></a-asset-item>
+    <a-asset-item id="model-stego"  src="models/stegosaurus.glb"></a-asset-item>
+    <a-asset-item id="model-ptero"  src="models/pterodactyl.glb"></a-asset-item>
+    <a-asset-item id="model-ankylo" src="models/triceratops.glb"></a-asset-item>
+    <a-asset-item id="model-velo"   src="models/velociraptor.glb"></a-asset-item>
+    <audio id="bgm" src="audio/jungle.mp3" preload="auto" loop></audio>
   </a-assets>
 
   <a-marker preset="hiro" id="hiro-marker">
-    <!-- Active dino entity — model swapped by JS -->
+    <!-- ══ LIGHTING: total ~2.1 (sebelumnya ~4.8) ══
+         Ambient   0.6  — cahaya dasar, tidak flat
+         Hemisphere 0.4 — simulasi langit + tanah
+         Dir utama 0.8  — bayangan ringan dari depan-atas
+         Dir fill  0.3  — kurangi sisi gelap tanpa over-bright
+    -->
+    <a-light type="ambient"     color="#ffffff" intensity="0.8"></a-light>
+    <a-light type="hemisphere"  color="#ffffff" groundColor="#888888" intensity="0.5"></a-light>
+    <a-light type="directional" color="#ffffff" intensity="0.9" position="1 3 2"></a-light>
+    <a-light type="directional" color="#ddddff" intensity="0.3" position="-2 2 -1"></a-light>
+
     <a-entity
       id="dino-entity"
-      animation-mixer
-      scale="0.4 0.4 0.4"
+      gltf-model="#model-trex"
+      animation-mixer="loop: repeat; clampWhenFinished: false;"
+      fix-material="roughness: 0.85; metalness: 0.0"
+      scale="0.3 0.3 0.3"
       position="0 0 0"
       rotation="0 0 0">
     </a-entity>
   </a-marker>
 
   <a-entity camera></a-entity>
-
 </a-scene>
 
 
-<!-- ═══════════════════════════════════════════
-     UI OVERLAY
-═══════════════════════════════════════════ -->
+<!-- ═══════════════════════ UI OVERLAY ═══════════════════════ -->
 <div id="ui">
 
-  <!-- Logo -->
   <div id="logo">
     <div class="logo-icon">🦕</div>
     <div class="logo-text">
@@ -310,20 +366,21 @@
     </div>
   </div>
 
-  <!-- Top bar -->
   <div id="topbar">
     <div class="dot-pulse"></div>
     Arahkan kamera ke marker Hiro
   </div>
 
-  <!-- Active dino label top-right -->
   <div id="active-label">
-    <span>🦖</span>
+    <span id="active-emoji">🦖</span>
     <span id="active-name">T-Rex</span>
   </div>
 
-  <!-- Right controls -->
   <div id="right-controls">
+    <div class="ctrl-btn" id="bgm-btn" title="BGM On/Off" onclick="toggleBGM()">
+      <span class="ci" id="bgm-icon">🔇</span>
+      <span class="cl">BGM</span>
+    </div>
     <div class="ctrl-btn" title="Flip Camera" onclick="flipCamera()">
       <span class="ci">🔄</span>
       <span class="cl">FLIP</span>
@@ -334,37 +391,33 @@
     </div>
   </div>
 
-  <!-- Bottom Panel -->
+  <!-- BOTTOM SHEET (draggable) -->
   <div id="bottom-panel">
+    <div id="sheet-handle"><div id="sheet-handle-bar"></div></div>
 
-    <!-- Dino selector tabs -->
-    <div id="dino-tabs">
-      <div class="dino-tab active" data-dino="trex" onclick="selectDino('trex', this)">
-        <span class="tab-emoji">🦖</span> T-Rex
-      </div>
-      <div class="dino-tab" data-dino="stego" onclick="selectDino('stego', this)">
-        <span class="tab-emoji">🦕</span> Stegosaurus
-      </div>
-      <div class="dino-tab" data-dino="ptero" onclick="selectDino('ptero', this)">
-        <span class="tab-emoji">🦅</span> Pterodactyl
-      </div>
-      <div class="dino-tab" data-dino="ankylo" onclick="selectDino('ankylo', this)">
-        <span class="tab-emoji">🐉</span> Triceratops
-      </div>
-      <div class="dino-tab" data-dino="velo" onclick="selectDino('velo', this)">
-        <span class="tab-emoji">🦎</span> Velociraptor
-      </div>
-    </div>
+    <div id="sheet-scroll">
 
-    <!-- Dino Info Card -->
-    <div id="dino-info">
-      <div id="dino-avatar">🦖</div>
-      <div id="dino-detail">
-        <div id="dino-header">
-          <div id="dino-name">Tyrannosaurus Rex</div>
-          <span id="dino-badge" class="badge-predator">Predator</span>
+      <div id="dino-tabs">
+        <div class="dino-tab active" onclick="selectDino('trex',this)"><span class="tab-emoji">🦖</span> T-Rex</div>
+        <div class="dino-tab" onclick="selectDino('stego',this)"><span class="tab-emoji">🦕</span> Stegosaurus</div>
+        <div class="dino-tab" onclick="selectDino('ptero',this)"><span class="tab-emoji">🦅</span> Pterodactyl</div>
+        <div class="dino-tab" onclick="selectDino('ankylo',this)"><span class="tab-emoji">🐉</span> Triceratops</div>
+        <div class="dino-tab" onclick="selectDino('velo',this)"><span class="tab-emoji">🦎</span> Velociraptor</div>
+      </div>
+
+      <div id="dino-info">
+
+        <div class="info-top">
+          <div id="dino-avatar">🦖</div>
+          <div id="dino-detail">
+            <div id="dino-header">
+              <div id="dino-name">Tyrannosaurus Rex</div>
+              <span id="dino-badge" class="badge-predator">Predator</span>
+            </div>
+            <p id="dino-desc">Raja predator Kapur Akhir dengan kekuatan gigitan terbesar di antara semua hewan darat yang pernah ada.</p>
+          </div>
         </div>
-        <p id="dino-desc">Raja predator dengan gigi tajam dan kekuatan gigitan yang paling kuat di zamannya.</p>
+
         <div id="dino-stats">
           <div class="stat-item">🦴 <strong>Periode:</strong>&nbsp;Kapur Akhir</div>
           <div class="stat-item">📏 <strong>Panjang:</strong>&nbsp;12–13 m</div>
@@ -372,144 +425,321 @@
           <div class="stat-item">🍖 <strong>Makanan:</strong>&nbsp;Daging</div>
           <div class="stat-item">🌍 <strong>Wilayah:</strong>&nbsp;Amerika Utara</div>
           <div class="stat-item">⚡ <strong>Kecepatan:</strong>&nbsp;~20 km/h</div>
+          <div class="stat-item">🦷 <strong>Gigi:</strong>&nbsp;~60 gigi, 30 cm</div>
+          <div class="stat-item">👁️ <strong>Penglihatan:</strong>&nbsp;Binokular tajam</div>
         </div>
-      </div>
-    </div>
 
+        <div class="info-section">
+          <div class="info-section-title">📅 Garis Waktu Era</div>
+          <div id="dino-timeline">
+            <div class="tl-item"><span class="tl-era">Trias</span><span class="tl-mya">252–201 jt thn</span></div>
+            <div class="tl-item"><span class="tl-era">Jura</span><span class="tl-mya">201–145 jt thn</span></div>
+            <div class="tl-item tl-active"><span class="tl-era">Kapur</span><span class="tl-mya">145–66 jt thn</span></div>
+          </div>
+        </div>
+
+        <div class="info-section">
+          <div class="info-section-title">📖 Tentang Dinosaurus Ini</div>
+          <p id="dino-desc-full">
+            Tyrannosaurus Rex hidup sekitar 68–66 juta tahun lalu di wilayah yang kini menjadi Amerika Utara bagian barat. Dengan panjang tubuh hingga 13 meter dan berat mencapai 9 ton, T-Rex adalah salah satu karnivora darat terbesar yang pernah hidup di Bumi. Tengkoraknya yang masif bisa mencapai panjang 1,5 meter, dilengkapi dengan sekitar 60 gigi berbentuk pisau bergerigi yang masing-masing bisa sepanjang 30 cm. Kekuatan gigitannya diperkirakan mencapai 35.000–57.000 Newton — jauh melampaui hewan darat manapun yang hidup saat ini. Meski bertubuh raksasa, para ilmuwan menemukan bukti bahwa T-Rex mungkin memiliki bulu proto-feather di bagian tubuh tertentu saat masih muda, mirip dengan kerabat dekatnya yang lebih kecil. Penglihatan binokularnya yang tajam dan indera penciuman yang luar biasa kuat menjadikannya predator puncak yang hampir tak tertandingi di ekosistem Kapur Akhir.
+          </p>
+        </div>
+
+        <div class="info-section">
+          <div class="info-section-title">⚡ Fakta Menarik</div>
+          <div id="dino-facts">
+            <div class="fact-item">
+              <span class="fact-icon">🦴</span>
+              <p class="fact-text"><strong>Tulang Berongga:</strong> Seperti burung modern, tulang T-Rex berongga untuk mengurangi berat badan sambil tetap kuat menopang tubuh raksasanya.</p>
+            </div>
+            <div class="fact-item">
+              <span class="fact-icon">🧠</span>
+              <p class="fact-text"><strong>Otak Besar:</strong> Lobus olfaktori (penciuman) T-Rex sangat besar, menunjukkan kemampuan mencium bau yang luar biasa — bisa mendeteksi mangsa dari jarak beberapa kilometer.</p>
+            </div>
+            <div class="fact-item">
+              <span class="fact-icon">🐣</span>
+              <p class="fact-text"><strong>Pertumbuhan Cepat:</strong> T-Rex remaja tumbuh hingga 2 kg per hari selama masa pertumbuhan puncaknya — salah satu laju pertumbuhan tercepat di antara dinosaurus theropoda.</p>
+            </div>
+            <div class="fact-item">
+              <span class="fact-icon">🤝</span>
+              <p class="fact-text"><strong>Kerabat Burung:</strong> T-Rex adalah kerabat dekat burung modern. DNA dan struktur tulangnya menunjukkan hubungan paling dekat dengan ayam dan burung unta.</p>
+            </div>
+          </div>
+        </div>
+
+      </div><!-- /dino-info -->
+    </div><!-- /sheet-scroll -->
   </div><!-- /bottom-panel -->
-
 </div><!-- /ui -->
 
+<div id="err-toast"></div>
 
 <script>
-  /* ═══════════════════════════════════════
-     DINO DATA
-  ═══════════════════════════════════════ */
+  /* ══════════════════════════════════
+     DATA LENGKAP SEMUA DINO
+  ══════════════════════════════════ */
   const DINOS = {
     trex: {
-      name: 'Tyrannosaurus Rex',
-      emoji: '🦖',
-      badge: 'Predator',
-      badgeClass: 'badge-predator',
-      desc: 'Raja predator dengan gigi tajam dan kekuatan gigitan yang paling kuat di zamannya.',
-      model: 'models/tyronnosaurus2.glb',
-      scale: '0.4 0.4 0.4',
-      stats: { 'Periode':'Kapur Akhir','Panjang':'12–13 m','Berat':'6–9 ton','Makanan':'Daging','Wilayah':'Amerika Utara','Kecepatan':'~20 km/h' },
-      statIcons: { 'Periode':'🦴','Panjang':'📏','Berat':'⚖️','Makanan':'🍖','Wilayah':'🌍','Kecepatan':'⚡' }
+      name: 'Tyrannosaurus Rex', emoji: '🦖',
+      badge: 'Predator', badgeClass: 'badge-predator',
+      desc: 'Raja predator Kapur Akhir dengan kekuatan gigitan terbesar di antara semua hewan darat yang pernah ada.',
+      modelId: '#model-trex', scale: '1.4 1.4 1.4',
+      fixMat: 'roughness: 0.85; metalness: 0.0',
+      stats: {
+        'Periode':'Kapur Akhir','Panjang':'12–13 m','Berat':'6–9 ton','Makanan':'Daging',
+        'Wilayah':'Amerika Utara','Kecepatan':'~20 km/h','Gigi':'~60 gigi, 30 cm','Penglihatan':'Binokular tajam'
+      },
+      statIcons: {
+        'Periode':'🦴','Panjang':'📏','Berat':'⚖️','Makanan':'🍖',
+        'Wilayah':'🌍','Kecepatan':'⚡','Gigi':'🦷','Penglihatan':'👁️'
+      },
+      tlActive: 2,
+      descFull: `Tyrannosaurus Rex hidup sekitar 68–66 juta tahun lalu di wilayah yang kini menjadi Amerika Utara bagian barat. Dengan panjang tubuh hingga 13 meter dan berat mencapai 9 ton, T-Rex adalah salah satu karnivora darat terbesar yang pernah hidup di Bumi. Tengkoraknya yang masif bisa mencapai panjang 1,5 meter, dilengkapi sekitar 60 gigi berbentuk pisau bergerigi yang masing-masing bisa sepanjang 30 cm. Kekuatan gigitannya diperkirakan mencapai 35.000–57.000 Newton — jauh melampaui hewan darat manapun yang hidup saat ini. Meski bertubuh raksasa, para ilmuwan menemukan bukti bahwa T-Rex mungkin memiliki proto-feather di bagian tubuh tertentu saat masih muda. Penglihatan binokularnya yang tajam dan indera penciuman yang luar biasa kuat menjadikannya predator puncak yang tak tertandingi di ekosistem Kapur Akhir.`,
+      facts: [
+        { icon: '🦴', title: 'Tulang Berongga', text: 'Seperti burung modern, tulang T-Rex berongga untuk mengurangi berat badan sambil tetap kuat menopang tubuh raksasanya.' },
+        { icon: '🧠', title: 'Penciuman Luar Biasa', text: 'Lobus olfaktori T-Rex sangat besar — bisa mendeteksi bau mangsa dari jarak beberapa kilometer jauhnya.' },
+        { icon: '🐣', title: 'Pertumbuhan Kilat', text: 'T-Rex remaja tumbuh hingga 2 kg per hari selama masa puncaknya — salah satu laju pertumbuhan tercepat di antara theropoda.' },
+        { icon: '🤝', title: 'Kerabat Burung', text: 'Struktur tulang dan DNA-nya menunjukkan T-Rex adalah kerabat paling dekat ayam dan burung unta di antara semua dinosaurus.' }
+      ]
     },
     stego: {
-      name: 'Stegosaurus',
-      emoji: '🦕',
-      badge: 'Herbivora',
-      badgeClass: 'badge-herbivora',
-      desc: 'Dinosaurus herbivora dengan lempeng besar di punggung sebagai pengatur suhu tubuh.',
-      model: 'models/stegosaurus.glb',
-      scale: '0.35 0.35 0.35',
-      stats: { 'Periode':'Jura Akhir','Panjang':'7–9 m','Berat':'2–4 ton','Makanan':'Tumbuhan','Wilayah':'Amerika & Eropa','Kecepatan':'~7 km/h' },
-      statIcons: { 'Periode':'🦴','Panjang':'📏','Berat':'⚖️','Makanan':'🌿','Wilayah':'🌍','Kecepatan':'⚡' }
+      name: 'Stegosaurus', emoji: '🦕',
+      badge: 'Herbivora', badgeClass: 'badge-herbivora',
+      desc: 'Herbivora ikonik dengan lempeng tulang raksasa di punggung dan ekor berduri yang mematikan.',
+      modelId: '#model-stego', scale: '30 30 30', fixMat: 'roughness: 0.85; metalness: 0.0',
+      stats: {
+        'Periode':'Jura Akhir','Panjang':'7–9 m','Berat':'2–4 ton','Makanan':'Tumbuhan',
+        'Wilayah':'Amerika & Eropa','Kecepatan':'~7 km/h','Lempeng':'Hingga 60 cm','Ekor':'4 duri thagomizer'
+      },
+      statIcons: {
+        'Periode':'🦴','Panjang':'📏','Berat':'⚖️','Makanan':'🌿',
+        'Wilayah':'🌍','Kecepatan':'⚡','Lempeng':'🔺','Ekor':'🗡️'
+      },
+      tlActive: 1,
+      descFull: `Stegosaurus adalah salah satu dinosaurus paling mudah dikenali berkat 17 lempeng tulang besar yang berdiri tegak di sepanjang punggungnya. Hidup sekitar 155–150 juta tahun lalu pada era Jura Akhir, Stegosaurus mencapai panjang hingga 9 meter namun memiliki otak yang sangat kecil — hanya sebesar kenari atau bola golf. Lempeng punggungnya bukan pelindung, melainkan berfungsi sebagai pengatur suhu tubuh yang bisa memerah saat teraliri darah untuk membuang panas, sekaligus sebagai sinyal visual untuk komunikasi sosial dan menarik pasangan. Senjata sesungguhnya ada di ekornya: empat duri keras sepanjang 90 cm yang disebut thagomizer — mampu menembus tulang predator. Meski dikenal lambat, Stegosaurus adalah herbivora tangguh yang bertahan selama jutaan tahun berkat kombinasi unik antara armor, senjata ekor, dan ukuran tubuh yang besar.`,
+      facts: [
+        { icon: '🌡️', title: 'Radiator Alami', text: 'Lempeng punggung Stegosaurus dipenuhi pembuluh darah dan berfungsi seperti radiator — membantu mengatur suhu tubuh dengan membuang atau menyerap panas.' },
+        { icon: '🧠', title: 'Otak Terkecil', text: 'Otaknya hanya sebesar bola golf untuk tubuh sebesar mobil van — salah satu rasio otak-tubuh terkecil di dunia dinosaurus.' },
+        { icon: '🗡️', title: 'Thagomizer Mematikan', text: 'Ekor berduri Stegosaurus bernama thagomizer. Fosil Allosaurus ditemukan dengan luka yang persis cocok dengan duri Stegosaurus.' },
+        { icon: '🌿', title: 'Pemakan Rendah', text: 'Postur tubuhnya membuat kepala Stegosaurus sangat dekat dengan tanah — ia memakan pakis, lumut, dan tanaman rendah, bukan daun pohon tinggi.' }
+      ]
     },
     ptero: {
-      name: 'Pterodactyl',
-      emoji: '🦅',
-      badge: 'Predator',
-      badgeClass: 'badge-predator',
-      desc: 'Reptil terbang raksasa dengan sayap hingga 9 meter, menguasai langit era Jurassic.',
-      model: 'models/pterodactyl.glb',
-      scale: '0.3 0.3 0.3',
-      stats: { 'Periode':'Jura Akhir','Rentang Sayap':'5–9 m','Berat':'20–250 kg','Makanan':'Ikan & Daging','Wilayah':'Seluruh Dunia','Kecepatan':'~120 km/h' },
-      statIcons: { 'Periode':'🦴','Rentang Sayap':'📐','Berat':'⚖️','Makanan':'🐟','Wilayah':'🌍','Kecepatan':'⚡' }
+      name: 'Pterodactyl', emoji: '🦅',
+      badge: 'Predator', badgeClass: 'badge-predator',
+      desc: 'Reptil terbang pertama bertulang belakang yang menguasai langit era Jura dengan sayap hingga 9 meter.',
+      modelId: '#model-ptero', scale: '1 1 1', fixMat: 'roughness: 0.85; metalness: 0.0',
+      stats: {
+        'Periode':'Jura Akhir','Rentang Sayap':'5–9 m','Berat':'20–250 kg','Makanan':'Ikan & Daging',
+        'Wilayah':'Seluruh Dunia','Kecepatan':'~120 km/h','Jambul':'Tulang bercincin','Sayap':'Kulit elastis'
+      },
+      statIcons: {
+        'Periode':'🦴','Rentang Sayap':'📐','Berat':'⚖️','Makanan':'🐟',
+        'Wilayah':'🌍','Kecepatan':'⚡','Jambul':'👑','Sayap':'🪶'
+      },
+      tlActive: 1,
+      descFull: `Pterodactyl (nama ilmiah Pterodactylus) adalah pterosaurus yang hidup sekitar 150 juta tahun lalu pada era Jura Akhir. Tidak seperti anggapan umum, Pterodactyl bukanlah dinosaurus — ia adalah reptil terbang yang terpisah dari garis keturunan dinosaurus. Sayapnya terbentuk dari membran kulit yang sangat elastis membentang dari jari keempat yang sangat memanjang hingga ke tubuhnya. Tulangnya berongga dan ringan agar bisa terbang efisien. Pterodactyl menggunakan jambul tulang di kepalanya untuk komunikasi sosial dan mungkin juga sebagai kemudi saat terbang. Spesimen dewasa bisa mencapai rentang sayap 9 meter — sebesar pesawat ringan modern. Para peneliti percaya ia adalah pemburu ikan yang handal, menyelam dari udara dan menangkap mangsa dengan paruh panjangnya yang bergigi. Jejak fosilnya ditemukan di hampir seluruh benua, menunjukkan ia adalah penerbang jarak jauh yang menguasai langit Jura.`,
+      facts: [
+        { icon: '✈️', title: 'Bukan Dinosaurus', text: 'Pterodactyl sering disebut dinosaurus terbang, tapi sebenarnya ia adalah reptil dari ordo Pterosauria yang terpisah dari garis keturunan dinosaurus.' },
+        { icon: '🪶', title: 'Sayap dari Kulit', text: 'Sayapnya bukan dari bulu seperti burung, melainkan membran kulit tipis yang kuat — mirip dengan kelelawar, namun jauh lebih kuno.' },
+        { icon: '🐟', title: 'Pemburu Ikan', text: 'Bentuk paruh dan gigi Pterodactyl sangat ideal untuk menangkap ikan licin. Ia mungkin menyambar ikan dari permukaan air seperti elang laut modern.' },
+        { icon: '🦴', title: 'Tulang Super Ringan', text: 'Tulangnya berlubang dan berongga seperti sedotan — membuatnya sangat ringan meski bertubuh besar, kunci utama kemampuan terbangnya.' }
+      ]
     },
     ankylo: {
-      name: 'Triceratops',
-      emoji: '🐉',
-      badge: 'Herbivora',
-      badgeClass: 'badge-herbivora',
-      desc: 'Tank hidup era dinosaurus — seluruh tubuhnya dilapisi baju besi tulang dan berekor gada berat.',
-      model: 'models/triceratops.glb',
-      scale: '0.38 0.38 0.38',
-      stats: { 'Periode':'Kapur Akhir','Panjang':'6–8 m','Berat':'4–8 ton','Makanan':'Tumbuhan','Wilayah':'Amerika Utara','Pertahanan':'Armor + Gada' },
-      statIcons: { 'Periode':'🦴','Panjang':'📏','Berat':'⚖️','Makanan':'🌿','Wilayah':'🌍','Pertahanan':'🛡️' }
+      name: 'Triceratops', emoji: '🐉',
+      badge: 'Herbivora', badgeClass: 'badge-herbivora',
+      desc: 'Herbivora bercula tiga yang hidup di era Kapur Akhir — salah satu dinosaurus paling dikenal dan paling tangguh.',
+      modelId: '#model-ankylo', scale: '0.38 0.38 0.38', fixMat: 'roughness: 0.85; metalness: 0.0',
+      stats: {
+        'Periode':'Kapur Akhir','Panjang':'8–9 m','Berat':'6–12 ton','Makanan':'Tumbuhan',
+        'Wilayah':'Amerika Utara','Kecepatan':'~24 km/h','Cula':'Hingga 1 m','Perisai':'Frill tulang'
+      },
+      statIcons: {
+        'Periode':'🦴','Panjang':'📏','Berat':'⚖️','Makanan':'🌿',
+        'Wilayah':'🌍','Kecepatan':'⚡','Cula':'🦏','Perisai':'🛡️'
+      },
+      tlActive: 2,
+      descFull: `Triceratops hidup di akhir era Kapur, sekitar 68–66 juta tahun lalu — sezaman dengan T-Rex dan punah pada peristiwa kepunahan massal yang sama. Namanya berarti "wajah tiga cula" dalam bahasa Yunani, merujuk pada dua cula di atas matanya yang bisa mencapai panjang 1 meter, serta satu cula lebih pendek di atas hidungnya. Tengkoraknya adalah salah satu yang terbesar dari semua hewan darat — bisa mencapai sepertiga dari total panjang tubuhnya. Frill (perisai) tulang besar di belakang kepalanya dulunya dikira hanya untuk pertahanan, namun penelitian terkini menunjukkan ia berfungsi sebagai sinyal komunikasi warna-warni untuk menarik pasangan dan menandai dominasi. Triceratops adalah salah satu herbivora paling sukses di masanya — fosilnya ditemukan dalam jumlah sangat besar di formasi Hell Creek di Amerika Utara, menunjukkan ia hidup dalam kawanan besar.`,
+      facts: [
+        { icon: '🦏', title: 'Tiga Cula Mematikan', text: 'Dua cula panjangnya bisa menembus kulit tebal T-Rex. Fosil Triceratops ditemukan dengan bekas luka gigitan T-Rex, namun banyak juga yang memperlihatkan bekas pertarungan yang berhasil dihindari.' },
+        { icon: '🎨', title: 'Frill Berwarna', text: 'Para ilmuwan menduga frill Triceratops bisa berubah warna seperti bunglon — digunakan untuk komunikasi, menarik pasangan, atau menggertak musuh.' },
+        { icon: '🦷', title: 'Gigi yang Terus Tumbuh', text: 'Triceratops memiliki hingga 800 gigi yang terus diperbarui sepanjang hidupnya — sempurna untuk mengunyah tanaman keras dan pakis berserat tinggi.' },
+        { icon: '🤝', title: 'Hidup Berkelompok', text: 'Bukti fosil menunjukkan Triceratops hidup dalam kawanan. Ini memberi perlindungan bagi yang muda dari predator seperti T-Rex.' }
+      ]
     },
     velo: {
-      name: 'Velociraptor',
-      emoji: '🦎',
-      badge: 'Predator',
-      badgeClass: 'badge-predator',
-      desc: 'Predator kecil namun cerdas dan lincah, berburu berkelompok dengan cakar tajam melengkung.',
-      model: 'models/velociraptor.glb',
-      scale: '0.3 0.3 0.3',
-      stats: { 'Periode':'Kapur Akhir','Panjang':'1.8–2 m','Berat':'15–30 kg','Makanan':'Daging','Wilayah':'Asia','Kecepatan':'~64 km/h' },
-      statIcons: { 'Periode':'🦴','Panjang':'📏','Berat':'⚖️','Makanan':'🍖','Wilayah':'🌍','Kecepatan':'⚡' }
+      name: 'Velociraptor', emoji: '🦎',
+      badge: 'Predator', badgeClass: 'badge-predator',
+      desc: 'Predator mungil namun sangat cerdas yang berburu dalam kelompok terkoordinasi dengan cakar sabit mematikan.',
+      modelId: '#model-velo', scale: '1 1 1', fixMat: 'roughness: 0.85; metalness: 0.0',
+      stats: {
+        'Periode':'Kapur Akhir','Panjang':'1.8–2 m','Berat':'15–30 kg','Makanan':'Daging',
+        'Wilayah':'Asia Tengah','Kecepatan':'~64 km/h','Cakar':'Sickle claw 6.5 cm','IQ':'Tertinggi di theropoda'
+      },
+      statIcons: {
+        'Periode':'🦴','Panjang':'📏','Berat':'⚖️','Makanan':'🍖',
+        'Wilayah':'🌍','Kecepatan':'⚡','Cakar':'🌙','IQ':'🧠'
+      },
+      tlActive: 2,
+      descFull: `Velociraptor yang sesungguhnya jauh lebih kecil dari yang digambarkan di film Jurassic Park — ukurannya hanya sebesar kalkun besar atau anjing sedang, dengan berat sekitar 15–30 kg. Ia hidup sekitar 75–71 juta tahun lalu di wilayah gurun gersang yang kini menjadi Mongolia dan China. Yang membuat Velociraptor benar-benar luar biasa bukan ukurannya, melainkan kecerdasannya — rasio otak terhadap ukuran tubuhnya adalah salah satu yang tertinggi di antara semua dinosaurus. Cakar sabit (sickle claw) melengkung sepanjang 6,5 cm di kaki keduanya bukan untuk mencabik, melainkan digunakan seperti grappling hook untuk mencengkeram dan menahan mangsa sementara giginya bekerja. Bukti fosil menunjukkan Velociraptor memiliki bulu di seluruh tubuhnya — membuatnya lebih mirip burung berbulu daripada reptil seperti kadal. Kemampuan berkoordinasi dalam kelompok dan kecepatan berlari hingga 64 km/jam menjadikannya salah satu predator paling efisien di zamannya.`,
+      facts: [
+        { icon: '🐔', title: 'Berukuran Ayam', text: 'Velociraptor nyata hanya sebesar kalkun besar. Yang kamu lihat di Jurassic Park sebenarnya lebih mirip Deinonychus atau Utahraptor — jauh lebih besar.' },
+        { icon: '🪶', title: 'Berbulu Lebat', text: 'Velociraptor dipastikan memiliki bulu di seluruh tubuhnya berdasarkan fosil yang menunjukkan bekas quill knobs di tulang lengannya — persis seperti burung modern.' },
+        { icon: '🌙', title: 'Cakar Sickle', text: 'Cakar melengkung di kaki keduanya berfungsi seperti grapple hook — mencengkeram mangsa agar tidak kabur, sementara gigitan menyelesaikan pekerjaan.' },
+        { icon: '🧠', title: 'Paling Cerdas', text: 'Rasio otak-tubuh Velociraptor tertinggi di antara dinosaurus non-avian. Ia diduga mampu memecahkan masalah dan berkoordinasi dalam strategi berburu berkelompok.' }
+      ]
     }
   };
 
-  let currentDino = 'trex';
-  const dinoEntity = document.getElementById('dino-entity');
-  const infoEl = document.getElementById('dino-info');
+  /* ══════════════════════════════════
+     BGM JUNGLE
+  ══════════════════════════════════ */
+  const bgmAudio = document.getElementById('bgm');
+  let bgmPlaying = false;
+  let bgmStarted = false;
 
-  /* Initial model */
-  dinoEntity.setAttribute('gltf-model', DINOS[currentDino].model);
-  dinoEntity.setAttribute('scale', DINOS[currentDino].scale);
+  function startBGMOnFirstTouch() {
+    if (!bgmStarted) {
+      bgmStarted = true;
+      bgmAudio.volume = 0.35;
+      bgmAudio.play().then(() => {
+        bgmPlaying = true;
+        document.getElementById('bgm-icon').textContent = '🔊';
+        document.getElementById('bgm-btn').classList.add('active-sound');
+      }).catch(() => {});
+    }
+    document.removeEventListener('touchstart', startBGMOnFirstTouch);
+    document.removeEventListener('click', startBGMOnFirstTouch);
+  }
+
+  document.addEventListener('touchstart', startBGMOnFirstTouch, { once: true });
+  document.addEventListener('click', startBGMOnFirstTouch, { once: true });
+
+  function toggleBGM() {
+    if (!bgmStarted) {
+      bgmStarted = true;
+      bgmAudio.volume = 0.35;
+      bgmAudio.play().then(() => {
+        bgmPlaying = true;
+        document.getElementById('bgm-icon').textContent = '🔊';
+        document.getElementById('bgm-btn').classList.add('active-sound');
+      }).catch(() => {});
+      return;
+    }
+    if (bgmPlaying) {
+      bgmAudio.pause();
+      bgmPlaying = false;
+      document.getElementById('bgm-icon').textContent = '🔇';
+      document.getElementById('bgm-btn').classList.remove('active-sound');
+    } else {
+      bgmAudio.play();
+      bgmPlaying = true;
+      document.getElementById('bgm-icon').textContent = '🔊';
+      document.getElementById('bgm-btn').classList.add('active-sound');
+    }
+  }
+
+  /* ══════════════════════════════════
+     RENDER INFOGRAFIS
+  ══════════════════════════════════ */
+  const TL_LABELS = [
+    { era: 'Trias', mya: '252–201 jt thn' },
+    { era: 'Jura',  mya: '201–145 jt thn' },
+    { era: 'Kapur', mya: '145–66 jt thn'  }
+  ];
+
+  function renderInfo(key) {
+    const d = DINOS[key];
+    document.getElementById('dino-avatar').textContent = d.emoji;
+    document.getElementById('dino-name').textContent   = d.name;
+    const badge = document.getElementById('dino-badge');
+    badge.textContent = d.badge; badge.className = d.badgeClass;
+    document.getElementById('dino-desc').textContent   = d.desc;
+
+    document.getElementById('dino-stats').innerHTML = Object.entries(d.stats).map(([k,v]) =>
+      `<div class="stat-item">${d.statIcons[k]} <strong>${k}:</strong>&nbsp;${v}</div>`
+    ).join('');
+
+    document.getElementById('dino-timeline').innerHTML = TL_LABELS.map((t,i) =>
+      `<div class="tl-item ${i === d.tlActive ? 'tl-active' : ''}">
+        <span class="tl-era">${t.era}</span>
+        <span class="tl-mya">${t.mya}</span>
+      </div>`
+    ).join('');
+
+    document.getElementById('dino-desc-full').textContent = d.descFull;
+
+    document.getElementById('dino-facts').innerHTML = d.facts.map(f =>
+      `<div class="fact-item">
+        <span class="fact-icon">${f.icon}</span>
+        <p class="fact-text"><strong>${f.title}:</strong> ${f.text}</p>
+      </div>`
+    ).join('');
+  }
+
+  /* ══════════════════════════════════
+     SELECT DINO
+  ══════════════════════════════════ */
+  let currentDino  = 'trex';
+  const dinoEntity = document.getElementById('dino-entity');
+  const infoEl     = document.getElementById('dino-info');
+  const errToast   = document.getElementById('err-toast');
+
+  dinoEntity.addEventListener('model-error', () => {
+    showToast('⚠️ Model gagal dimuat. Pastikan file .glb ada di folder /models/');
+  });
+
+  function showToast(msg, ms = 4000) {
+    errToast.textContent = msg;
+    errToast.style.display = 'block';
+    setTimeout(() => { errToast.style.display = 'none'; }, ms);
+  }
 
   function selectDino(key, tabEl) {
     if (key === currentDino) return;
     currentDino = key;
     const d = DINOS[key];
 
-    /* Update tabs */
     document.querySelectorAll('.dino-tab').forEach(t => t.classList.remove('active'));
     tabEl.classList.add('active');
 
-    /* Fade info */
     infoEl.classList.add('fade');
     setTimeout(() => {
-      /* Update AR model */
       dinoEntity.removeAttribute('gltf-model');
-      dinoEntity.setAttribute('gltf-model', d.model);
-      dinoEntity.setAttribute('scale', d.scale);
+      setTimeout(() => {
+        dinoEntity.setAttribute('gltf-model', d.modelId);
+        dinoEntity.setAttribute('scale', d.scale);
+        dinoEntity.setAttribute('animation-mixer', 'loop: repeat; clampWhenFinished: false;');
+        dinoEntity.setAttribute('fix-material', d.fixMat);
+      }, 50);
 
-      /* Update active label */
-      document.getElementById('active-name').textContent = d.name.split(' ')[0];
-      document.querySelector('#active-label span:first-child').textContent = d.emoji;
+      document.getElementById('active-emoji').textContent = d.emoji;
+      document.getElementById('active-name').textContent  = d.name.split(' ')[0];
 
-      /* Update info card */
-      document.getElementById('dino-avatar').textContent = d.emoji;
-      document.getElementById('dino-name').textContent = d.name;
-      const badge = document.getElementById('dino-badge');
-      badge.textContent = d.badge;
-      badge.className = d.badgeClass;
-      document.getElementById('dino-desc').textContent = d.desc;
-
-      const statsEl = document.getElementById('dino-stats');
-      statsEl.innerHTML = Object.entries(d.stats).map(([k, v]) =>
-        `<div class="stat-item">${d.statIcons[k]} <strong>${k}:</strong>&nbsp;${v}</div>`
-      ).join('');
-
+      renderInfo(key);
+      document.getElementById('sheet-scroll').scrollTop = 0;
       infoEl.classList.remove('fade');
     }, 220);
   }
 
-  /* ═══════════════════════════════════════
-     CAMERA FLIP
-  ═══════════════════════════════════════ */
+  /* ══════════════════════════════════
+     KAMERA & FULLSCREEN
+  ══════════════════════════════════ */
   let facingMode = 'environment';
   function flipCamera() {
     facingMode = facingMode === 'environment' ? 'user' : 'environment';
-    const scene = document.querySelector('a-scene');
-    const arSystem = scene.systems['arjs'];
-    if (arSystem && arSystem.arController) {
-      try {
-        arSystem.arController.stopVideo();
-        scene.setAttribute('arjs', `sourceType: webcam; facingMode: ${facingMode}; trackingMethod: best; debugUIEnabled: false;`);
-      } catch(e) {
-        console.warn('Flip camera:', e);
+    document.querySelector('a-scene').setAttribute('arjs',
+      `sourceType: webcam; facingMode: ${facingMode}; trackingMethod: best; debugUIEnabled: false; sourceWidth: 1280; sourceHeight: 720; displayWidth: 1280; displayHeight: 720;`
+    );
+    setTimeout(() => {
+      const vid = document.querySelector('video');
+      if (vid) {
+        vid.style.transform = facingMode === 'user' ? 'scaleX(-1)' : 'scaleX(1)';
       }
-    }
+    }, 800);
   }
 
-  /* ═══════════════════════════════════════
-     FULLSCREEN
-  ═══════════════════════════════════════ */
   function toggleFullscreen() {
     if (!document.fullscreenElement) {
       document.documentElement.requestFullscreen && document.documentElement.requestFullscreen();
@@ -518,9 +748,9 @@
     }
   }
 
-  /* ═══════════════════════════════════════
-     MARKER FOUND / LOST FEEDBACK
-  ═══════════════════════════════════════ */
+  /* ══════════════════════════════════
+     MARKER EVENTS
+  ══════════════════════════════════ */
   document.querySelector('#hiro-marker').addEventListener('markerFound', () => {
     document.getElementById('topbar').innerHTML =
       '<div class="dot-pulse" style="background:#9ddf5a"></div> Dinosaurus terdeteksi!';
@@ -529,7 +759,144 @@
     document.getElementById('topbar').innerHTML =
       '<div class="dot-pulse"></div> Arahkan kamera ke marker Hiro';
   });
-</script>
 
+  /* ══════════════════════════════════
+     FIX CANVAS GEPENG
+  ══════════════════════════════════ */
+  function fixCanvasSize() {
+    const canvas = document.querySelector('a-scene canvas');
+    if (canvas) {
+      canvas.style.width  = window.innerWidth  + 'px';
+      canvas.style.height = window.innerHeight + 'px';
+    }
+    const video = document.querySelector('video[autoplay]');
+    if (video) {
+      video.style.objectFit = 'cover';
+      video.style.width  = '100vw';
+      video.style.height = '100vh';
+    }
+  }
+
+  document.querySelector('a-scene').addEventListener('loaded', () => {
+    fixCanvasSize();
+    const v = document.querySelector('#arjs-video, video[autoplay]');
+    if (v) {
+      v.style.objectFit = 'cover';
+      v.style.width  = '100vw';
+      v.style.height = '100vh';
+      v.style.transform = 'scaleX(1)';
+    }
+  });
+
+  window.addEventListener('resize', fixCanvasSize);
+  window.addEventListener('orientationchange', () => setTimeout(fixCanvasSize, 300));
+
+  /* ══════════════════════════════════
+     BOTTOM SHEET DRAG / SWIPE
+  ══════════════════════════════════ */
+  (function() {
+    const panel  = document.getElementById('bottom-panel');
+    const handle = document.getElementById('sheet-handle');
+    const scroll = document.getElementById('sheet-scroll');
+
+    const PEEK_PX        = 160;
+    const FULL_VH        = 0.80;
+    const SNAP_THRESHOLD = 60;
+
+    let isDragging = false;
+    let startY = 0, startBottom = 0, currentTranslate = 0;
+
+    const panelH       = () => window.innerHeight * FULL_VH;
+    const peekTranslate = () => panelH() - PEEK_PX;
+    const fullTranslate = () => 0;
+    const miniTranslate = () => panelH() - 48;
+
+    function setTranslate(y, animated) {
+      panel.style.transition = animated
+        ? 'transform 0.35s cubic-bezier(0.32,0.72,0,1)'
+        : 'none';
+      panel.style.transform = 'translateY(' + y + 'px)';
+      currentTranslate = y;
+    }
+
+    function snapToNearest(velocity) {
+      const mid = peekTranslate();
+      if (velocity < -0.3 || currentTranslate < mid - SNAP_THRESHOLD) {
+        setTranslate(fullTranslate(), true);
+      } else if (velocity > 0.3 || currentTranslate > mid + SNAP_THRESHOLD) {
+        setTranslate(miniTranslate(), true);
+      } else {
+        setTranslate(peekTranslate(), true);
+      }
+    }
+
+    window.addEventListener('load', () => { setTranslate(peekTranslate(), false); });
+    window.addEventListener('orientationchange', () => {
+      setTimeout(() => setTranslate(peekTranslate(), false), 350);
+    });
+
+    let lastY = 0, lastT = 0, velY = 0;
+
+    handle.addEventListener('touchstart', onDragStart, { passive: true });
+    handle.addEventListener('mousedown',  onDragStart);
+
+    function onDragStart(e) {
+      isDragging = true;
+      startY = e.touches ? e.touches[0].clientY : e.clientY;
+      startBottom = currentTranslate;
+      lastY = startY; lastT = Date.now(); velY = 0;
+      panel.style.transition = 'none';
+    }
+
+    window.addEventListener('touchmove', onDragMove, { passive: false });
+    window.addEventListener('mousemove', onDragMove);
+
+    function onDragMove(e) {
+      if (!isDragging) return;
+      const clientY = e.touches ? e.touches[0].clientY : e.clientY;
+      const dy = clientY - startY;
+      const now = Date.now();
+      velY = (clientY - lastY) / Math.max(1, now - lastT);
+      lastY = clientY; lastT = now;
+      let next = Math.max(0, Math.min(miniTranslate(), startBottom + dy));
+      setTranslate(next, false);
+      if (next < peekTranslate() - 20) {
+        scroll.style.overflowY = 'auto';
+      } else {
+        if (e.cancelable) e.preventDefault();
+      }
+    }
+
+    window.addEventListener('touchend', onDragEnd);
+    window.addEventListener('mouseup',  onDragEnd);
+
+    function onDragEnd() {
+      if (!isDragging) return;
+      isDragging = false;
+      snapToNearest(velY);
+    }
+
+    handle.addEventListener('click', () => {
+      if (Math.abs(currentTranslate - fullTranslate()) < 10) {
+        setTranslate(peekTranslate(), true);
+      } else {
+        setTranslate(fullTranslate(), true);
+      }
+    });
+
+    scroll.addEventListener('touchstart', (e) => {
+      if (scroll.scrollTop === 0) startY = e.touches[0].clientY;
+    }, { passive: true });
+
+    scroll.addEventListener('touchmove', (e) => {
+      if (scroll.scrollTop === 0 && e.touches[0].clientY > startY + 15) {
+        if (Math.abs(currentTranslate - fullTranslate()) < 20) {
+          setTranslate(peekTranslate(), true);
+        }
+      }
+    }, { passive: true });
+  })();
+
+</script>
 </body>
 </html>
