@@ -32,13 +32,6 @@
       color: var(--text);
     }
 
-    a-scene {
-      position: fixed !important;
-      top: 0; left: 0;
-      width: 100vw !important;
-      height: 100vh !important;
-      z-index: 0;
-    }
     a-scene canvas, .arjs-loader {
       display: block;
       /* width dan height dihapus agar AR.js bisa menghitung rasio aslinya */
@@ -313,7 +306,6 @@
 
 <!-- ═══════════════════════ AR SCENE ═══════════════════════ -->
 <a-scene
-  embedded
   vr-mode-ui="enabled: false"
   renderer="logarithmicDepthBuffer: true; antialias: true; colorManagement: true; exposure: 0.6;"
   arjs="sourceType: webcam; trackingMethod: best; debugUIEnabled: false;">
